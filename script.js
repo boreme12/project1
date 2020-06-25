@@ -1,20 +1,44 @@
-const { forEach } = require("lodash");
-const { SIGWINCH } = require("constants");
-
-const player1 = document.querySelector("#player1"),
-  player2 = document.querySelector("#player2"),
-  buttons = document.querySelectorAll("button");
+const buttons = document.querySelectorAll('button'),
+  player1 = {
+    name: 'Player 1',
+    score: 0,
+    ref: document.querySelector('#player1'),
+  },
+  player2 = {
+    name: 'Player 2',
+    score: 0,
+    ref: document.querySelector('#player2'),
+  };
 
 let gameboard = [null, null, null, null, null, null, null, null, null],
   prevClick = null,
-  playerscore1 = 0,
-  playerscore2 = 0,
   drawCounter = 0;
 
-const constructor = () => {
-  player1.innerHTML = `Player 1 Score: ${playerscore1}`;
-  player2.innerHTML = `Player 2 Score: ${playerscore2}`;
-  window.alert("Player One goes first");
+buttons.forEach((button) => {
+  button.addEventListener('click', function (e) {
+    e.target.innerText = setPlayer();
+    disable(e);
+    gameboard[e.target.id] = e.target.innerText;
+    gameLogic();
+  });
+});
+
+const startGame = () => {
+  injectScore(player1);
+  injectScore(player2);
+  playerPrompt();
+};
+
+const injectScore = (player) => {
+  player.ref.innerHTML = `${player.name} Score: ${player.score}`;
+};
+
+const playerPrompt = () => {
+  if (prevClick === 'O' || prevClick === null) {
+    window.alert('Player One goes first');
+  } else {
+    window.alert('Player Two goes first');
+  }
 };
 
 const disable = (e) => {
@@ -22,24 +46,14 @@ const disable = (e) => {
 };
 
 const setPlayer = () => {
-  prevClick = prevClick === null || prevClick === "O" ? "X" : "O";
+  prevClick = prevClick === null || prevClick === 'O' ? 'X' : 'O';
   return prevClick;
 };
 
-buttons.forEach((button) => {
-  button.addEventListener("click", function (e) {
-    e.target.innerText = setPlayer();
-    disable(e);
-    gameboard[e.target.id] = e.target.innerText;
-    gameLogic();
-    console.log(drawCounter);
-  });
-});
-
 const gameLogic = () => {
   drawCounter++;
-  winnerLogic("X");
-  winnerLogic("O");
+  winnerLogic('X');
+  winnerLogic('O');
   drawLogic();
 };
 
@@ -55,10 +69,10 @@ const winnerLogic = (Square) => {
 };
 
 const drawLogic = () => {
-  if (drawCounter === 9 && confirm("The game is a draw")) {
+  if (drawCounter === 9 && confirm('The game is a draw')) {
     gameboard = [null, null, null, null, null, null, null, null, null];
     buttons.forEach((button) => {
-      button.innerHTML = "";
+      button.innerHTML = '';
       button.disabled = false;
       drawCounter = 0;
     });
@@ -71,22 +85,22 @@ const Win = (Square, winArr) => {
     gameboard[winArr[1]] === Square &&
     gameboard[winArr[2]] === Square
   ) {
-    if (confirm("You are the winner! Play again?")) {
+    if (confirm('You are the winner! Play again?')) {
       gameboard = [null, null, null, null, null, null, null, null, null];
       buttons.forEach((button) => {
-        button.innerHTML = "";
+        button.innerHTML = '';
         button.disabled = false;
         drawCounter = 0;
       });
-      if (Square === "X") {
-        playerscore1++;
+      if (Square === 'X') {
+        player1.score++;
       } else {
-        playerscore2++;
+        player2.score++;
       }
 
-      constructor();
+      startGame();
     }
   }
 };
 
-constructor();
+startGame();
