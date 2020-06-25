@@ -1,3 +1,12 @@
-body {
-    background-color: red;
+#board {
+  display: flex;
+  flex-flow: row wrap;
+  height: 20rem;
+  width: 20rem;
+}
+
+button {
+  width: 33.3%;
+  height: 33.3%;
+  font-size: 5rem;
 }
